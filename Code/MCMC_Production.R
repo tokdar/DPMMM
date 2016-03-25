@@ -57,7 +57,7 @@ ell = c(1,2,3,4,5,15)
 L = length(ell)
 ell_0 = c( rep(.5/(L-1),(L-1) ), .5)
 
-Triplet_meta = read.csv("~/Dropbox/Neuro/Data/Trial_ID.csv", stringsAsFactors=F)
+Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", stringsAsFactors=F)
 Triplet_meta = unique(Triplet_meta)
 Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
 triplets = 2
