@@ -1,12 +1,12 @@
 rm(list=ls())
+FIRST_USE = T
 
 burnIn = 1e2#500e3
 N.MC = 1e2
 thin = 1 #300
-
+if(FIRST_USE) install.packages(c("BayesLogit","MCMCpack", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
 
 library(BayesLogit)
-#install.packages(c("truncnorm","MCMCpack"), repos = "http://cran.us.r-project.org")
 library(MCMCpack)
 library(parallel)
 library(ggplot2)
