@@ -17,7 +17,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   m_gamma = rnorm(K,m_0, sqrt(sigma2_0))
   sigma2_gamma = rinvgamma(K,r_gamma,s_gamma)
   sigma2 = rinvgamma(1,r_0,s_0)
-  pi_gamma = rdirichlet(1,rep(alpha_gamma,K))
+  pi_gamma = rDirichlet(1,rep(alpha_gamma,K))
   
   gamma = rep(NA,nRep)
   

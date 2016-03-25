@@ -14,7 +14,7 @@ for(l in 1:L){
 
 eta = matrix(nrow = nSamples,ncol = t.T)
 for(i in 1:nSamples){
-  pi_gamma = rdirichlet(1,rep(1,K)/K)
+  pi_gamma = rDirichlet(1,rep(1,K)/K)
   m_gamma = rnorm(K,0,1)
   sigma2_gamma = rinvgamma(K,shape = r_gamma,scale = s_gamma)
   k = sample(1:K,size=1,prob=pi_gamma)
@@ -22,7 +22,7 @@ for(i in 1:nSamples){
   
   eta_bar = rnorm(1,m_gamma[k], sqrt(sigma2_gamma[k]))
   
-  rho = rdirichlet(1, ell_0 )
+  rho = rDirichlet(1, ell_0 )
   ell_index = sample(1:L, 1, prob = rho)
   C = sigma2*K.SE[[ ell_index ]]
   eta[i,] = eta_bar + mvrnorm(1,rep(0,t.T),C)
