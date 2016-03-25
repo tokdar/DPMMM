@@ -7,10 +7,14 @@ thin = 1 #300
 if(FIRST_USE) install.packages(c("BayesLogit","MCMCpack", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
 
 library(BayesLogit)
-library(MCMCpack)
+#library(MCMCpack) ## trying to work a way around MCMCpack
+library(bayesm)
 library(parallel)
 library(ggplot2)
 #load synthetic data and hyperparameters
+
+## new function to draw from 
+rDirichlet <- function(n, alpha) return(t(replicate(n, ridirchlet(alpha)))[1:n,])
 
 directory = "~/DPMMM-master/"
 
