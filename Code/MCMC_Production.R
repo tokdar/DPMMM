@@ -14,8 +14,8 @@ library(ggplot2)
 #load synthetic data and hyperparameters
 
 ## new function to draw from 
-rDirichlet <- function(n, alpha) return(t(replicate(n, c(rdirichlet(alpha) ) ) )[1:n,])
-rinvgamma <-function(n,a,b) return(1/rgamma(n,a,b))
+rDirichlet <- function(n, alpha) return(t(replicate(n, c(rdirichlet(alpha) ) ) ) )
+rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n,shape = shape, scale = scale))
 
 directory = "~/DPMMM-master/"
 
