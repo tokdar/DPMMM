@@ -15,6 +15,7 @@ library(ggplot2)
 
 ## new function to draw from 
 rDirichlet <- function(n, alpha) return(t(replicate(n, c(rdirichlet(alpha) ) ) )[1:n,])
+rinvgamma <-function(n,a,b) return(1/rgamma(n,a,b))
 
 directory = "~/DPMMM-master/"
 
