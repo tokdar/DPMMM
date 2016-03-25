@@ -12,7 +12,7 @@ library(parallel)
 library(ggplot2)
 #load synthetic data and hyperparameters
 
-directory = "~/DPMMM/"
+directory = "~/DPMMM-master/"
 
 Code_dir = paste(directory,"Code/",sep="")
 Fig_dir = paste(directory,"Figures/",sep="")
