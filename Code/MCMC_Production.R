@@ -14,7 +14,7 @@ library(ggplot2)
 #load synthetic data and hyperparameters
 
 ## new function to draw from 
-rDirichlet <- function(n, alpha) return(t(replicate(n, rdirichlet(alpha)))[1:n,])
+rDirichlet <- function(n, alpha) return(t(replicate(n, c(rdirichlet(alpha) ) ) )[1:n,])
 
 directory = "~/DPMMM-master/"
 
