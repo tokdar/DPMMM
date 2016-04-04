@@ -4,6 +4,7 @@ FIRST_USE = T
 burnIn = 1e2#500e3
 N.MC = 1e2
 thin = 1 #300
+nCores = 1
 if(FIRST_USE) install.packages(c("BayesLogit","bayesm", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
 
 library(BayesLogit)
@@ -11,6 +12,7 @@ library(BayesLogit)
 library(bayesm)
 library(parallel)
 library(ggplot2)
+library(MASS)
 #load synthetic data and hyperparameters
 
 ## new function to draw from 
@@ -67,7 +69,7 @@ source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )
 #triplets is the index (or row number) of the triplet in the Triplet_Meta dataframe
 pt = proc.time()[3]
-mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = 1)
+mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = nCores)
 proc.time()[3] - pt
 
 
