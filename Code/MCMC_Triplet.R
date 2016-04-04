@@ -159,7 +159,14 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   
   Median.Min.Max = apply(MinMax,2,median)
   rr = seq(from = 0.01, to = 2, len = N.MC)
-  df = data.frame(rr, sigma2 = SIGMA2_POST, density = dinvgamma(rr, shape = r_0, scale = s_0) )
+  
+  dInvgamma<-function(x,shape, scale){
+    alpha = shape
+    beta = scale
+    return ( (beta^alpha/gamma(alpha) )*x^(-alpha - 1)*exp(-beta/x) )
+  }
+  
+  df = data.frame(rr, sigma2 = SIGMA2_POST, density = dInvgamma(rr, shape = r_0, scale = s_0) )
   pdf(paste(Triplet_fig_dir,"Sigma2_",triplet,".pdf", sep=""))
   g<-ggplot(df, aes(x=sigma2)) + 
     geom_density(size = 2) + 
