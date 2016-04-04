@@ -17,7 +17,7 @@ library(MASS)
 
 ## new function to draw from 
 rDirichlet <- function(n, alpha) return(t(replicate(n, c(rdirichlet(alpha) ) ) ) )
-rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n,shape = shape, scale = scale))
+rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n,shape = shape, scale = 1/scale))
 
 directory = "~/DPMMM-master/"
 
