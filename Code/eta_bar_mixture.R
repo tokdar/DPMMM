@@ -1,4 +1,4 @@
-nSamples = 10e3
+nSamples = N.MC
 PI = rDirichlet(nSamples,rep(alpha_gamma,K))
 
 sigma2_gamma = matrix( rinvgamma(K*nSamples,shape = r_gamma,scale = s_gamma), nrow = nSamples)
