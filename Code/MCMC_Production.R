@@ -15,9 +15,15 @@ library(ggplot2)
 library(MASS)
 #load synthetic data and hyperparameters
 
-## new function to draw from 
-rDirichlet <- function(n, alpha) return(t(replicate(n, c(rdirichlet(alpha) ) ) ) )
-rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n,shape = shape, scale = 1/scale))
+## rdirichlet and rinvgamma scraped from MCMCpack
+rDirichlet <- function(n, alpha){
+  l <- length(alpha)
+  x <- matrix(rgamma(l * n, alpha), ncol = l, byrow = TRUE)
+  sm <- x %*% rep(1, l)
+  return(x/as.vector(sm))
+}
+
+rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n = n, shape = shape, rate = scale))
 
 directory = "~/DPMMM-master/"
 
