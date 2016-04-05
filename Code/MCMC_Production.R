@@ -5,11 +5,9 @@ burnIn = 1e2#500e3
 N.MC = 1e2
 thin = 1 #300
 nCores = 1
-if(FIRST_USE) install.packages(c("BayesLogit","bayesm", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
+if(FIRST_USE) install.packages(c("BayesLogit", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
 
 library(BayesLogit)
-#library(MCMCpack) ## trying to work a way around MCMCpack
-library(bayesm)
 library(parallel)
 library(ggplot2)
 library(MASS)
