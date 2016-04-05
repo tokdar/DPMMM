@@ -1,9 +1,9 @@
 rm(list=ls())
 FIRST_USE = T
 
-burnIn = 1e2#500e3
-N.MC = 1e2
-thin = 1 #300
+burnIn = 25e3
+N.MC = 25e3
+thin = 1
 nCores = 1
 if(FIRST_USE) install.packages(c("BayesLogit", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
 
@@ -11,7 +11,6 @@ library(BayesLogit)
 library(parallel)
 library(ggplot2)
 library(MASS)
-#load synthetic data and hyperparameters
 
 ## rdirichlet and rinvgamma scraped from MCMCpack
 rDirichlet <- function(n, alpha){
