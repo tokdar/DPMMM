@@ -14,9 +14,10 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   nRep = dim(X)[1]
   t.T = dim(X)[2]
   
+  L = length(ell_0)
   m_gamma = rnorm(K,m_0, sqrt(sigma2_0))
   sigma2_gamma = rinvgamma(K,r_gamma,s_gamma)
-  sigma2 = rinvgamma(1,r_0,s_0)
+  sigma2 = rinvgamma(L,r_0,s_0)
   pi_gamma = rDirichlet(1,rep(alpha_gamma,K))
   
   gamma = rep(NA,nRep)
@@ -31,7 +32,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   
   
   
-  L = length(ell_0)
+
   K.SE = K.SE.inv = list()
   for(l in 1:L){
     K.SE[[l]] = matrix(nrow=t.T,ncol=t.T)
@@ -49,7 +50,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   ell_prior = rep(1/L,L)
   eta = matrix(nrow = nRep, ncol = t.T)
   for(i in 1:nRep){
-    C = sigma2*K.SE[[ ell_index[i] ]]
+    C = sigma2[ ell_index[i] ]*K.SE[[ ell_index[i] ]]
     eta[i,] = mvrnorm(1, rep(0,t.T), C)
   }
   eta_dynamic = eta
@@ -61,8 +62,8 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   
   ALPHA = A_POST = list()
   ALPHA_BAR_POST = ZETA_POST = N_switch_alpha_bar = N_mode_switch = MinMax = matrix(nrow = N.MC, ncol = nRep)
-  SIGMA2_POST = ETA_BAR_POST = MinMax.Pred = rep(NA,N.MC)
-  Ell_Post = matrix(nrow = N.MC, ncol = L)
+  ETA_BAR_POST = MinMax.Pred = rep(NA,N.MC)
+  SIGMA2_POST = Ell_Post = matrix(nrow = N.MC, ncol = L)
   
   lambda_A_POST = lambda_B_POST = matrix(nrow = N.MC, ncol = t.T)
   for(i in 1:nRep){
@@ -117,16 +118,16 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
       alpha_modes = mean(alpha_bar_tmp)
       ALPHA_BAR_POST[mm,] = alpha_bar_tmp
       ZETA_POST[mm,] = zeta
-      SIGMA2_POST[mm] = sigma2
+      SIGMA2_POST[mm,] = sigma2
       s = sample(1:K,1, prob = pi_gamma)
       ETA_BAR_POST[mm] = rnorm(1, m_gamma[s], sqrt(sigma2_gamma[s]) )
       
       lambda_A_POST[m,] = lambda_A
       lambda_B_POST[m,] = lambda_B
-      
+
       Ell_Post[mm,] = ell_prior[1,]
       l.pred = sample(1:L,1,prob=ell_prior[1,])
-      eta.pred = ETA_BAR_POST[mm] + mvrnorm(1,rep(0,t.T),sigma2*K.SE[[l.pred]])
+      eta.pred = ETA_BAR_POST[mm] + mvrnorm(1,rep(0,t.T),sigma2[l.pred]*K.SE[[l.pred]])
       alpha.pred = 1/(1+exp(-eta.pred))
       MinMax.Pred[mm] = max(alpha.pred) - min(alpha.pred)
       
@@ -165,9 +166,9 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     beta = scale
     return ( (beta^alpha/gamma(alpha) )*x^(-alpha - 1)*exp(-beta/x) )
   }
-  
-  df = data.frame(rr, sigma2 = SIGMA2_POST, density = dInvgamma(rr, shape = r_0, scale = s_0) )
-  pdf(paste(Triplet_fig_dir,"Sigma2_",triplet,".pdf", sep=""))
+  for(l in 1:L){
+  df = data.frame(rr, sigma2 = SIGMA2_POST[,l], density = dInvgamma(rr, shape = r_0, scale = s_0[l]) )
+  pdf(paste(Triplet_fig_dir,"Sigma2_",triplet,"_",l,".pdf", sep=""))
   g<-ggplot(df, aes(x=sigma2)) + 
     geom_density(size = 2) + 
     xlab("") + 
@@ -175,6 +176,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     theme(axis.text=element_text(size=20, color="black"),axis.title=element_text(size=24,face="bold"), legend.text=element_text(size=20))
   print(g)
   dev.off()
+  }
   
   eb_post = 1/(1+exp(-ETA_BAR_POST))
   eb_prior = 1/(1+exp(-ETA_BAR_PRIOR))

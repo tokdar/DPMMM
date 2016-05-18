@@ -22,7 +22,7 @@ rDirichlet <- function(n, alpha){
 
 rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n = n, shape = shape, rate = scale))
 
-directory = "~/DPMMM-master/"
+directory = "~/DPMMM/"
 
 Code_dir = paste(directory,"Code/",sep="")
 Fig_dir = paste(directory,"Figures/",sep="")
@@ -53,15 +53,19 @@ m_0= 0
 sigma2_0 = 1 #.01
 r_gamma = 101
 s_gamma = 1
-#sampling for sigma2
-s_0 = 50
-r_0 = s_0+1
-#parameters for pi_gamma
-alpha_gamma = 1/K
 
 ell = c(1,2,3,4,5,15)
 L = length(ell)
 ell_0 = c( rep(.5/(L-1),(L-1) ), .5)
+
+#sampling for sigma2
+delta = 2
+r_0 = 51
+s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2)) 
+
+#parameters for pi_gamma
+alpha_gamma = 1/K
+
 
 Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", stringsAsFactors=F)
 Triplet_meta = unique(Triplet_meta)

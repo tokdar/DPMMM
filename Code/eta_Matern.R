@@ -14,7 +14,7 @@ eta_Matern<-function(A,A_star,B,B_star,Omega, zeta, sigma2, K.Matern, ell_prior,
   for(l in 1:L){
     C[[l]] = C.inv[[l]] = list()
     for(k in 1:K){
-      C[[l]][[k]] = sigma2*K.Matern[[l]] + sigma2_gamma[k]*ones%*%t(ones)   
+      C[[l]][[k]] = sigma2[l]*K.Matern[[l]] + sigma2_gamma[k]*ones%*%t(ones)   
       C.inv[[l]][[k]] = solve(C[[l]][[k]])
     }
   }
@@ -44,7 +44,7 @@ eta_Matern<-function(A,A_star,B,B_star,Omega, zeta, sigma2, K.Matern, ell_prior,
     m.tilde = C.tilde%*% (kappa_i + C.inv[[ ell_index[i] ]][[k]]%*%ones*m_gamma[k] )
     
     eta_dynamic[i,] = mvrnorm(1,m.tilde,C.tilde)
-    C.l.inv = solve(sigma2*K.Matern[[ ell_index[i] ]])
+    C.l.inv = solve(sigma2[ ell_index[i] ]*K.Matern[[ ell_index[i] ]])
     v.2 = (1/sigma2_gamma[k] + t(ones)%*%C.l.inv%*%ones )^(-1)
     m.2 = v.2*(m_gamma[k]/sigma2_gamma[k] + t(ones)%*%C.l.inv%*%eta_dynamic[i,])
     eta_bar[i] = rnorm(1,m.2,sqrt(v.2)) 
