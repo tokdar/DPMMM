@@ -1,12 +1,24 @@
+# clear the environment
 rm(list=ls())
-FIRST_USE = T
+# if set to T, will install needed packages
+# once packages are installed, no need to set to T
+FIRST_USE = F
+if(FIRST_USE) install.packages(c("BayesLogit", "parallel", "ggplot2"), 
+                               repos = "http://cran.us.r-project.org")
 
+# set burn in
 burnIn = 25e3
+# set number of iterations
 N.MC = 25e3
+# set thinning rate
+# if set to 1, no thinning
 thin = 1
-nCores = 1
-if(FIRST_USE) install.packages(c("BayesLogit", "parallel", "ggplot2"), repos = "http://cran.us.r-project.org")
+# number of cores to use if running in parallel
+nCores = 4
 
+
+
+# load needed libraries
 library(BayesLogit)
 library(parallel)
 library(ggplot2)
@@ -14,6 +26,17 @@ library(MASS)
 
 ## rdirichlet and rinvgamma scraped from MCMCpack
 rDirichlet <- function(n, alpha){
+#######################################
+# This function samples from a dirichlet distribution
+#
+# Args:
+#   n: number of samples
+#   alpha: parameter vector
+#
+# Return:
+#   A matrix with n rows where each row is a probability vector
+#   whose length is equal to the length of alpha
+#######################################
   l <- length(alpha)
   x <- matrix(rgamma(l * n, alpha), ncol = l, byrow = TRUE)
   sm <- x %*% rep(1, l)
@@ -22,8 +45,14 @@ rDirichlet <- function(n, alpha){
 
 rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n = n, shape = shape, rate = scale))
 
-directory = "~/DPMMM/"
+#directory = "~/DPMMM/"
 
+# this should be modified for increased flexibility
+# right now it requires a specific directory path
+# so the code is not portable
+# it is also inconvinient because this file is not in the root directory
+
+directory = "/Users/azeemzaman/Documents/Research/Neuro/DPMMM/"
 Code_dir = paste(directory,"Code/",sep="")
 Fig_dir = paste(directory,"Figures/",sep="")
 Triplet_dir = paste(directory,"Post_Summaries/",sep="")
@@ -47,6 +76,7 @@ source(paste(Code_dir,"pi_gamma_step.R",sep="") )
 source(paste(Code_dir,"Bincounts.R",sep="") )
 source(paste(Code_dir,"Data_Pre_Proc.R", sep="") )
 source(paste(Code_dir,"MCMC_Triplet.R", sep="") )
+
 #parameters for mixture components
 K = 5
 m_0= 0 
@@ -66,14 +96,16 @@ s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2))
 #parameters for pi_gamma
 alpha_gamma = 1/K
 
-
-Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", stringsAsFactors=F)
+# read data from Surja's website
+Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", 
+                        stringsAsFactors=F)
 Triplet_meta = unique(Triplet_meta)
 Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
 triplets = 2
 
 source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )
+
 #triplets is the index (or row number) of the triplet in the Triplet_Meta dataframe
 pt = proc.time()[3]
 mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = nCores)
