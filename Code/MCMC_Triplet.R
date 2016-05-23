@@ -232,66 +232,36 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   print(g)
   dev.off()
   
-  df = data.frame(replication = 1:nRep, Z.mean = apply(ZETA_POST,2,mean) )
-  # create a plot for Zeta and save it
-  # this can probably be removed
-  pdf(paste(Triplet_fig_dir,"Zeta_Post_",triplet,".pdf",sep="") )
-  g<-ggplot(df, aes(x = replication) )+
-    geom_point(aes(x=replication,y=Z.mean), size=4)+
-    theme(axis.text=element_text(size=20, color="black"),axis.title=element_text(size=24,face="bold"), legend.text=element_text(size=20))
-  print(g)
-  dev.off()
-  
-  lw.1 = qgamma(.025, shape = r_A, rate = s_A)
-  up.1 = qgamma(.975, shape = r_A, rate = s_A)
-  m.1 = r_A/s_A
-  
-  lw.2 = apply(lambda_A_POST,2,quantile,.025)
-  up.2 = apply(lambda_A_POST,2,quantile,.975)
-  m.2 = apply(lambda_A_POST,2,mean)
-  df = data.frame(Time = 1:t.T, m.1, up.1, lw.1, m.2, up.2, lw.2)
-  # create a plot for Lambda_A
-  pdf(paste(Triplet_fig_dir,"Lambda_A_Post_",triplet,".pdf",sep="") )
-  p1 <- ggplot(df, aes(Time, m.1))+
-    geom_point(color = "blue")+
-    geom_line(data=df, color = "blue")+
-    geom_ribbon(data=df,aes(ymin=lw.1,ymax=up.1),alpha=0.3, color = "blue", fill = "blue")+ 
-    geom_line(aes(Time, m.2), color = "red" )+
-    geom_point(aes(Time, m.2), color = "red" )+
-    geom_ribbon(data=df, aes(ymin=lw.2,ymax=up.2), color = "red", alpha = .3, fill = "red")+
-    ylab("Counts")+
-    ylim(0,15)+
-    theme(axis.text=element_text(size=20, color="black"),
-          axis.title=element_text(size=24,face="bold"), 
-          legend.text=element_text(size=20))
-  print(p1)   
+
+  ######
+  #Lambda plot
+  #####
+  # calculate posterior quantities
+  lw.A = apply(lambda_A_POST,2,quantile,.025)
+  up.A = apply(lambda_A_POST,2,quantile,.975)
+  m.A = apply(lambda_A_POST,2,mean)
+  lw.B = apply(lambda_B_POST,2,quantile,.025)
+  up.B = apply(lambda_B_POST,2,quantile,.975)
+  m.B = apply(lambda_B_POST,2,mean)
+  # put in single data frame
+  full_df = data.frame(Time = rep(1:40, 2), 
+                       Sound = c(rep("A", 40), rep("B", 40)), 
+                       Mean = c(m.A, m.B),
+                       low = c(lw.A, lw.B),
+                       up = c(up.A, up.B))
+  # plot lambda_A and lambda_B, with error bars
+  pdf(paste(Triplet_fig_dir,"lambdas_",triplet,".pdf",sep="") )
+  p1 = ggplot(full_df, aes(x = Time, y = Mean, group = Sound, color = Sound)) +
+    geom_line() +
+    geom_ribbon(aes(ymin = low, ymax = up, 
+                    group = Sound, fill = Sound), 
+                alpha = .1,
+                colour = NA) +
+    ylab("Counts")
+  print(p1)
   dev.off()
   
   
-  lw.1 = qgamma(.025, shape = r_B, rate = s_B)
-  up.1 = qgamma(.975, shape = r_B, rate = s_B)
-  m.1 = r_B/s_B
-  
-  lw.2 = apply(lambda_B_POST,2,quantile,.025)
-  up.2 = apply(lambda_B_POST,2,quantile,.975)
-  m.2 = apply(lambda_B_POST,2,mean)
-  df = data.frame(Time = 1:t.T, m.1, up.1, lw.1, m.2, up.2, lw.2)
-  # create a plot for Lambda B
-  pdf(paste(Triplet_fig_dir,"Lambda_B_Post_",triplet,".pdf",sep="") )
-  p1 <- ggplot(df, aes(Time, m.1))+
-    geom_point(color = "blue")+
-    geom_line(data=df, color = "blue")+
-    geom_ribbon(data=df,aes(ymin=lw.1,ymax=up.1),alpha=0.3, color = "blue", fill = "blue")+ 
-    geom_line(aes(Time, m.2), color = "red" )+
-    geom_point(aes(Time, m.2), color = "red" )+
-    geom_ribbon(data=df, aes(ymin=lw.2,ymax=up.2), color = "red", alpha = .3, fill = "red")+
-    ylab("Counts")+
-    ylim(0,15)+
-    theme(axis.text=element_text(size=20, color="black"),
-          axis.title=element_text(size=24,face="bold"),
-          legend.text=element_text(size=20))
-  print(p1)   
-  dev.off()
   
   colnames(Ell_Post) = as.character(ell)
   df = stack(as.data.frame(Ell_Post))
@@ -318,52 +288,35 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   print(g)
   dev.off()
   
-  for(i in 1:nRep){
-    
-    df = data.frame(Time = 1:t.T, 
-                    mean = alpha_mean[i,], 
-                    CI.025 = alpha_pt025[i,], 
-                    CI.975 = alpha_pt975[i,],
-                    sample1 = ALPHA[[i]][1,],
-                    sample2 = ALPHA[[i]][50,], 
-                    sample3 = ALPHA[[i]][100,])
-    l2 = sqrt(sum( (alpha_mean[i,] - mean(alpha_mean[i,]) )^2 ) )
-    l2 = round(l2,2)
-    # alpha_triplit plot
-    pdf(paste(Triplet_fig_dir,"Alpha_triplet_",triplet,"_",i,".pdf", sep=""))
-    g <- ggplot(df, aes(Time, mean))+
-      geom_point(color = "black")+
-      geom_line(data=df, color = "black")+
-      geom_line(data=df,aes(Time,sample1), color = "gray70")+
-      geom_line(data=df,aes(Time,sample2), color = "gray70")+
-      geom_line(data=df,aes(Time,sample3), color = "gray70")+
-      geom_ribbon(data=df,aes(ymin=CI.025,ymax=CI.975),alpha=0.1, color = "black", fill = "black")+ 
-      ylim(0,1)+
-      xlab("Time")+
-      annotate( "text", x=5, y = .9, size = 8, label = paste("L2 = " ,l2, sep=""))+
-      theme(axis.text=element_text(size=20, color="black"),
-            axis.title=element_text(size=24,face="bold"), 
-            legend.text=element_text(size=20))
-    print(g)
-    dev.off()
-    
-    df = data.frame(MinMax = MinMax[,i], Prior = MinMax.Prior)
-    # make MinMax plot
-    pdf(paste(Triplet_fig_dir,"MinMax_",
-              triplet,"_",i,".pdf",
-              sep=""))
-    g<-ggplot(df, aes(x=MinMax)) + 
-      geom_density(size=2) + 
-      xlab("") + 
-      geom_density( aes(Prior), color = "blue", size = 2)+
-      xlim(0,1) + 
-      theme(axis.text=element_text(size=20, color="black"),
-            axis.title=element_text(size=24,face="bold"), 
-            legend.text=element_text(size=20))
-    print(g)
-    dev.off()
-    
-  }
+  ######
+  # Create MinMax plot for all densities together
+  ######
+  df = melt(MinMax, varnames = c("Time", "Trail"))
+  # make MinMax plot
+  pdf(paste(Triplet_fig_dir,"MinMax_all_",triplet,".pdf", sep=""))
+  g=ggplot(df) + 
+    geom_density(aes(x = value, group = Trail, fill = Trail),
+                 alpha = 1/5) +
+    xlim(0,1)
+  print(g)
+  dev.off()
+  
+  ######
+  # Create plot with all alpha_t functions together
+  ######
+  # process data for ggplot
+  trail_names = paste0("Trail", 1:nrow(alpha_mean))
+  row.names(alpha_mean) = trail_names
+  mean_df = data.frame(alpha_mean, Trail = trail_names)
+  colnames(mean_df) = c(1:ncol(alpha_mean), "Trail")
+  mean_df = melt(mean_df, id.vars = "Trail", value.name = "mean", variable.name = "Time")
+  # make and save plot
+  pdf(paste(Triplet_fig_dir,"alpha_joint_",triplet,".pdf", sep=""))  
+  g = ggplot(mean_df, aes(x = Time, y = mean, group = Trail)) + geom_line(aes(group = Trail))
+  print(g)
+  dev.off()
+  
+  
   # save a data file with the results
   save(file = paste(Triplet_dir,"triplet_",triplet,".RData", sep=""),
        alpha_mean, 
