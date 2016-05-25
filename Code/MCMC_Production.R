@@ -76,6 +76,8 @@ source(paste(Code_dir,"pi_gamma_step.R",sep="") )
 source(paste(Code_dir,"Bincounts.R",sep="") )
 source(paste(Code_dir,"Data_Pre_Proc.R", sep="") )
 source(paste(Code_dir,"MCMC_Triplet.R", sep="") )
+source(paste(Code_dir,"MCMC_plot.R", sep="") )
+
 
 #parameters for mixture components
 K = 5
@@ -108,8 +110,9 @@ source(paste(Code_dir,"MinMax_Prior.R",sep="") )
 
 #triplets is the index (or row number) of the triplet in the Triplet_Meta dataframe
 pt = proc.time()[3]
-mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = nCores)
+MCMC.results = mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = nCores)
 proc.time()[3] - pt
+mclapply(MCMC.results, function(x) MCMC.plot(x, T), mc.cores = nCores)
 
 
 
