@@ -92,7 +92,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   for(i in 1:nRep){
     ALPHA[[i]] = A_POST[[i]] = matrix( nrow = N.MC, ncol = t.T)
   }
-  
+  ALPHA_pred = matrix(nrow = N.MC, ncol = t.T) 
   ###############################
   #inside MCMC loop
   
@@ -158,6 +158,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
       l.pred = sample(1:L,1,prob=ell_prior[1,])
       eta.pred = ETA_BAR_POST[mm] + mvrnorm(1,rep(0,t.T),sigma2[l.pred]*K.SE[[l.pred]])
       alpha.pred = 1/(1+exp(-eta.pred))
+      ALPHA_pred[mm,] = alpha.pred
       MinMax.Pred[mm] = max(alpha.pred) - min(alpha.pred)
       
       for(i in 1:nRep){
@@ -202,6 +203,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
        A_pt975,
        ALPHA_BAR_POST,
        ETA_BAR_POST, 
+       ALPHA_pred,
        Median.Min.Max)
   
   return_list = list(
@@ -216,6 +218,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     MinMax.Prior = MinMax.Prior,
     MinMax.Pred = MinMax.Pred,
     A_POST = A_POST,
+    ALPHA_pred = ALPHA_pred,
     MinMax = MinMax)
   
   return(return_list)
