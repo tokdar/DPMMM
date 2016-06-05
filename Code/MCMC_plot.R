@@ -1,4 +1,83 @@
-MCMC.plot = function(MCMC.results, all.plots = F){
+single_draw_plot <- function(n_samps, ALPHA, trails_to_sample){
+  nRep = length(ALPHA)
+  sampled_series = data.frame(Trail = 0, Sample = 0, matrix(NA, nrow = 1, ncol = 40))
+  N = nrow(ALPHA[[1]])
+  if (nRep < trails_to_sample){
+    sampled_trails = 1:nRep
+  } else {
+    sampled_trails = sample(1:nRep, trails_to_sample)
+  }
+  for (i in sampled_trails){
+    rows = sample(1:N, n_samps)
+    trail_name = paste0("Trail_",i)
+    sample_alpha_is = ALPHA[[i]][rows,]
+    named_samples = data.frame(Trail = trail_name, 
+                               Sample = paste0(trail_name, 1:n_samps),
+                               sample_alpha_is)
+    sampled_series = rbind(sampled_series, named_samples)
+  }
+  sampled_series = sampled_series[-1,]
+  colnames(sampled_series) <- c("Trail","Sample", 1:40)
+  plot_df = melt(sampled_series, variable.name = "Time")
+  plot_df$Time = 25*as.numeric(plot_df$Time)
+  g = ggplot(plot_df, aes(x = Time, 
+                          y = value,
+                          group = Sample,
+                          colour = Trail)) +
+      geom_line() +
+      xlab("Time (ms)") +
+      ylab("Alpha") +
+      theme(legend.position = "none")                  
+  return(g)
+}
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes){
   triplet = MCMC.results$triplet
   ALPHA_BAR_POST = MCMC.results$ALPHA_BAR_POST
   ALPHA = MCMC.results$ALPHA
@@ -10,7 +89,9 @@ MCMC.plot = function(MCMC.results, all.plots = F){
   A_POST = MCMC.results$A_POST
   MinMax.Pred = MCMC.results$MinMax.Pred
   MinMax.Prior = MCMC.results$MinMax.Prior
-  nRep = dim(MinMax)[2]
+  ALPHA_pred = MCMC.results$ALPHA_pred
+  nRep = length(ALPHA)
+  N = nrow(ALPHA[[1]])
   
   Triplet_fig_dir = paste(Fig_dir,"Triplet_",triplet,"/",sep="")
   unlink(Triplet_fig_dir, recursive=T)
@@ -167,4 +248,78 @@ MCMC.plot = function(MCMC.results, all.plots = F){
     dev.off()
   }
   
+# make single page of plots
+  
+  # plot of alpha draws
+  p1 = single_draw_plot(n_samps, ALPHA, 3)
+  
+  # plot of distributions for length scales
+  colnames(Ell_Post) = as.character(ell)
+  df = stack(as.data.frame(Ell_Post))
+  names(df) = c("Probability", "lengthScale")
+  df$lengthScale <- factor(df$lengthScale,levels = ell,ordered = TRUE)
+  p2 = ggplot(df, aes(lengthScale, Probability)) + 
+    geom_violin(scale = "width",aes(fill = lengthScale), alpha = 1/5) +
+    theme(legend.position = "none")
+  
+  # plot of alpha_bar
+  alpha_bar_df = data.frame(alpha_bar =1/(1+exp(-ETA_BAR_POST)))
+  p3 = ggplot(alpha_bar_df, aes(alpha_bar)) + geom_density() +
+      theme(legend.position = "none") 
+  
+  # plot of posterior predictive for future alpha*
+  df = melt(data.frame(MinMax = MinMax.Pred, Prior = MinMax.Prior))
+  p4 = ggplot(df, aes(value, 
+                 group = variable,
+                 colour = variable,
+                 fill = variable)) + geom_density(alpha = 1/5)
+  
+  # plot lambdas
+  lw.A = 40*apply(lambda_A_POST,2,quantile,.025)
+  up.A = 40*apply(lambda_A_POST,2,quantile,.975)
+  m.A = 40*apply(lambda_A_POST,2,mean)
+  lw.B = 40*apply(lambda_B_POST,2,quantile,.025)
+  up.B = 40*apply(lambda_B_POST,2,quantile,.975)
+  m.B = 40*apply(lambda_B_POST,2,mean)
+  # put in single data frame
+  full_df = data.frame(Time = rep(1:40, 2), 
+                       Sound = c(rep("A", 40), rep("B", 40)), 
+                       Mean = c(m.A, m.B),
+                       low = c(lw.A, lw.B),
+                       up = c(up.A, up.B))
+  full_df$Time = 25*full_df$Time
+  # plot lambda_A and lambda_B, with error bars
+  p5 = ggplot(full_df, aes(x = Time, y = Mean, group = Sound, color = Sound)) +
+    geom_line() +
+    geom_ribbon(aes(ymin = low, ymax = up, 
+                    group = Sound, fill = Sound), 
+                alpha = .1,
+                colour = NA) +
+    ylab("Firing Rate (Hz)") +
+    xlab("Time (ms)")
+  
+  
+  switch_counts = switch_matrix(ALPHA_pred, widthes)
+  switch_mean = apply(switch_counts, 1, mean)
+  switch_975 = apply(switch_counts, 1, function(x) {quantile(x, .975)})
+  switch_25 = apply(switch_counts, 1, function(x) {quantile(x, .025)})
+  switch_df = data.frame(Width = 2*widthes,
+                         mean = switch_mean,
+                         low = switch_25,
+                         up = switch_975)
+  switch_full = melt(data.frame(width = 2*widthes, switch_counts),
+                     id.vars = "width")
+  
+  p6 = ggplot(switch_df, aes(x = Width, y = mean)) +
+    geom_line(size = 2) +
+    geom_ribbon(aes(ymin = low, ymax = up), 
+                alpha = .1,
+                fill = "red") +
+    geom_jitter(data = switch_full, aes(x = width, y = value, group = width),
+                alpha = 1/500, colour = "blue", size = 1/2) +
+    ylab("Number of Switches") +
+    xlab("Switch Distance")
+  pdf(paste(Triplet_fig_dir,"Summary_Triplet",triplet,".pdf", sep=""))
+  multiplot(p1, p2, p3, p4, p5, p6, cols = 2)
+  dev.off()
 }
