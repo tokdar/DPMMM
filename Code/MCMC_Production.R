@@ -23,6 +23,8 @@ library(BayesLogit)
 library(parallel)
 library(ggplot2)
 library(MASS)
+library(reshape2)
+library(dplyr)
 
 ## rdirichlet and rinvgamma scraped from MCMCpack
 rDirichlet <- function(n, alpha){
@@ -77,7 +79,8 @@ source(paste(Code_dir,"Bincounts.R",sep="") )
 source(paste(Code_dir,"Data_Pre_Proc.R", sep="") )
 source(paste(Code_dir,"MCMC_Triplet.R", sep="") )
 source(paste(Code_dir,"MCMC_plot.R", sep="") )
-
+source(paste(Code_dir,"Count_Switches.R", sep="") )
+source(paste(Code_dir,"Data_Merge.R", sep="") )
 
 #parameters for mixture components
 K = 5
@@ -98,12 +101,15 @@ s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2))
 #parameters for pi_gamma
 alpha_gamma = 1/K
 
+# radius values for switch counts
+widthes = seq(from = 0.01, to = .15, length.out = 20)
+
 # read data from Surja's website
 Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", 
                         stringsAsFactors=F)
 Triplet_meta = unique(Triplet_meta)
 Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
-triplets = 2
+triplets = c(2, 62)
 
 source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )
@@ -112,7 +118,7 @@ source(paste(Code_dir,"MinMax_Prior.R",sep="") )
 pt = proc.time()[3]
 MCMC.results = mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = nCores)
 proc.time()[3] - pt
-mclapply(MCMC.results, function(x) MCMC.plot(x, T), mc.cores = nCores)
+mclapply(MCMC.results, function(x) MCMC.plot(x, F, 2, widthes), mc.cores = nCores)
 
 
 
