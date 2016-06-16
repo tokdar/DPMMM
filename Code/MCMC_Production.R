@@ -25,7 +25,8 @@ library(ggplot2)
 library(MASS)
 library(reshape2)
 library(dplyr)
-
+library(compiler)
+enableJIT(3)
 ## rdirichlet and rinvgamma scraped from MCMCpack
 rDirichlet <- function(n, alpha){
 #######################################
@@ -105,20 +106,22 @@ alpha_gamma = 1/K
 widthes = seq(from = 0.01, to = .15, length.out = 20)
 
 # read data from Surja's website
-Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", 
-                        stringsAsFactors=F)
+# Triplet_meta = read.csv("http://www2.stat.duke.edu/~st118/Jenni/STCodes/ResultsV2/All-HMM-Poi-selected.csv", 
+#                        stringsAsFactors=F)
+Triplet_meta = read.csv("/Users/azeemzaman/Documents/Research/Neuro/DPMMM/Triplets_pass_criteria.csv")
 Triplet_meta = unique(Triplet_meta)
-Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
-triplets = c(2, 62)
+# Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
+Triplet_meta = Triplet_meta[order(Triplet_meta[,"WinPr"], decreasing=T),]
+triplets = sample(1:nrow(Triplet_meta), 1)
 
 source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )
 
 #triplets is the index (or row number) of the triplet in the Triplet_Meta dataframe
 pt = proc.time()[3]
-MCMC.results = mclapply(triplets, function(triplet) MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior), mc.cores = nCores)
+MCMC.results = mclapply(triplets, function(triplet) {try(MCMC.triplet(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior))}, mc.cores = nCores)
 proc.time()[3] - pt
-mclapply(MCMC.results, function(x) MCMC.plot(x, F, 2, widthes), mc.cores = nCores)
+mclapply(MCMC.results, function(x) {try(MCMC.plot(x, F, 2, widthes))}, mc.cores = nCores)
 
 
 

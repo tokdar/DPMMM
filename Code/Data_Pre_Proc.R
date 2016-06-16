@@ -5,19 +5,45 @@ freq = Triplet_meta[triplet,"AltFreq"]
 pos = Triplet_meta[triplet,"AltPos"]
 cell = Triplet_meta[triplet,"Site"]
 fname = Triplet_meta[triplet,"Cell"]
-
-trials <- read.table(url(paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/VC/", fname,".txt",sep="") ), sep="\t" )
-trials = trials[,-dim(trials)[2]]
-colnames(trials) = c("TRIAL", "TASKID", "A_FREQ", "B_FREQ", "XA", "XB", "REWARD", "A_LEVEL", "B_LEVEL", "SOFF")
-
-url = paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/VC/", fname, "_cell", cell, "_spiketimes.txt",sep="")
-spiketimes <- read.table(url(paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/VC/", fname, "_cell", cell, "_spiketimes.txt",sep="") ), sep="\t" )
-
-
-spiketimes = spiketimes[,-dim(spiketimes)[2]]
-colnames(spiketimes) = c("TRIAL2", "TIMES")
-
-AB = Bincounts(trials, spiketimes, frq = c(freq, 742), pos = c(pos, -6), on.reward = TRUE, start.time = 0, end.time = 1000, bw = bin_width, target = c(25, 150, 800), match.level = FALSE, AB.eqlevel = FALSE, go.by.soff = TRUE, n.iter = 1e3, plot = FALSE, faux.dual.mix = FALSE, faux.dual.int = FALSE, faux.alpha = 0.5, faux.dual.swi = FALSE, faux.target = c(100, 100), nAB = "match.realABcount")
+if (cell != 0){
+  trials <- read.table(url(paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/VC/", 
+                                 fname,".txt",sep="") ), sep="\t" )
+  # seems to be extra column of NAs
+  # probably a result of extra spaces
+  # we now drop it
+  trials = trials[,-dim(trials)[2]]
+  # name remaining columns
+  colnames(trials) = c("TRIAL", "TASKID", "A_FREQ", "B_FREQ", "XA", "XB", "REWARD", "A_LEVEL", "B_LEVEL", "SOFF")
+  
+  url = paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/VC/", fname,
+              "_cell", cell, "_spiketimes.txt",sep="")
+  spiketimes <- read.table(url(paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/VC/",
+                                     fname, "_cell", cell, "_spiketimes.txt",sep="") ), sep="\t" )
+  
+  # data file generates an extra column of NAs
+  # we drop this unneeded column here
+  spiketimes = spiketimes[,-dim(spiketimes)[2]]
+  colnames(spiketimes) = c("TRIAL2", "TIMES")
+} else {
+  trials <- read.table(url(paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/JA/",
+                                 fname, ".txt", sep = "")), sep = "")
+  trials <- cbind(trials, 600)
+  # these files do no have an extra column of NAs
+  # no need to drop the last column
+  #trials = trials[,-dim(trials)[2]]
+  colnames(trials) = c("TRIAL", "TASKID", "A_FREQ", "B_FREQ", "XA", "XB", "REWARD", "A_LEVEL", "B_LEVEL", "SOFF")
+  
+  url = paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/JA/", fname,
+              "_spiketimes.txt",sep="")
+  spiketimes <- read.table(url(paste("http://www2.stat.duke.edu/~st118/Jenni/STCodes/JA/",
+                                     fname, "_spiketimes.txt",sep="") ), sep="" )
+  
+  # there is no uneeded column of NAs
+  # no need to drop the last column
+  # spiketimes = spiketimes[,-dim(spiketimes)[2]]
+  colnames(spiketimes) = c("TRIAL2", "TIMES")
+}
+AB = Bincounts(trials, spiketimes, frq = c(freq, 742), pos = c(pos, -144/pos), on.reward = TRUE, start.time = 0, end.time = 1000, bw = bin_width, target = c(25, 150, 800), match.level = FALSE, AB.eqlevel = FALSE, go.by.soff = TRUE, n.iter = 1e3, plot = FALSE, faux.dual.mix = FALSE, faux.dual.int = FALSE, faux.alpha = 0.5, faux.dual.swi = FALSE, faux.target = c(100, 100), nAB = "match.realABcount")
 
 
 X = AB[[3]]
@@ -63,16 +89,3 @@ r_B = am.2; s_B = bm.2
 ret_X = list(X,r_A,s_A,r_B,s_B)
 return(ret_X)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

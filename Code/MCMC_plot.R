@@ -1,6 +1,7 @@
 single_draw_plot <- function(n_samps, ALPHA, trails_to_sample){
+  bins = ncol(ALPHA[[1]])
   nRep = length(ALPHA)
-  sampled_series = data.frame(Trail = 0, Sample = 0, matrix(NA, nrow = 1, ncol = 40))
+  sampled_series = data.frame(Trail = 0, Sample = 0, matrix(NA, nrow = 1, ncol = bins))
   N = nrow(ALPHA[[1]])
   if (nRep < trails_to_sample){
     sampled_trails = 1:nRep
@@ -17,7 +18,7 @@ single_draw_plot <- function(n_samps, ALPHA, trails_to_sample){
     sampled_series = rbind(sampled_series, named_samples)
   }
   sampled_series = sampled_series[-1,]
-  colnames(sampled_series) <- c("Trail","Sample", 1:40)
+  colnames(sampled_series) <- c("Trail","Sample", 1:bins)
   plot_df = melt(sampled_series, variable.name = "Time")
   plot_df$Time = 25*as.numeric(plot_df$Time)
   g = ggplot(plot_df, aes(x = Time, 
@@ -92,6 +93,7 @@ MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes){
   ALPHA_pred = MCMC.results$ALPHA_pred
   nRep = length(ALPHA)
   N = nrow(ALPHA[[1]])
+  bins = ncol(ALPHA[[1]])
   
   Triplet_fig_dir = paste(Fig_dir,"Triplet_",triplet,"/",sep="")
   unlink(Triplet_fig_dir, recursive=T)
@@ -175,8 +177,8 @@ MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes){
     up.B = apply(lambda_B_POST,2,quantile,.975)
     m.B = apply(lambda_B_POST,2,mean)
     # put in single data frame
-    full_df = data.frame(Time = rep(1:40, 2), 
-                         Sound = c(rep("A", 40), rep("B", 40)), 
+    full_df = data.frame(Time = rep(1:bins, 2), 
+                         Sound = c(rep("A", bins), rep("B", bins)), 
                          Mean = c(m.A, m.B),
                          low = c(lw.A, lw.B),
                          up = c(up.A, up.B))
@@ -275,15 +277,15 @@ MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes){
                  fill = variable)) + geom_density(alpha = 1/5)
   
   # plot lambdas
-  lw.A = 40*apply(lambda_A_POST,2,quantile,.025)
-  up.A = 40*apply(lambda_A_POST,2,quantile,.975)
-  m.A = 40*apply(lambda_A_POST,2,mean)
-  lw.B = 40*apply(lambda_B_POST,2,quantile,.025)
-  up.B = 40*apply(lambda_B_POST,2,quantile,.975)
-  m.B = 40*apply(lambda_B_POST,2,mean)
+  lw.A = bins*apply(lambda_A_POST,2,quantile,.025)
+  up.A = bins*apply(lambda_A_POST,2,quantile,.975)
+  m.A = bins*apply(lambda_A_POST,2,mean)
+  lw.B = bins*apply(lambda_B_POST,2,quantile,.025)
+  up.B = bins*apply(lambda_B_POST,2,quantile,.975)
+  m.B = bins*apply(lambda_B_POST,2,mean)
   # put in single data frame
-  full_df = data.frame(Time = rep(1:40, 2), 
-                       Sound = c(rep("A", 40), rep("B", 40)), 
+  full_df = data.frame(Time = rep(1:bins, 2), 
+                       Sound = c(rep("A", bins), rep("B", bins)), 
                        Mean = c(m.A, m.B),
                        low = c(lw.A, lw.B),
                        up = c(up.A, up.B))
