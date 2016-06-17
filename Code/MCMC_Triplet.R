@@ -9,7 +9,9 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   retX = Pre_Proc(triplet, bin_width = 25, Triplet_meta)
   # this function returns a list
   # first is counts for each bin
-  X = retX[[1]]
+  # take the transpose
+  # now each row is a time series
+  X = t(retX[[1]])
   # then the prior parameters for A
   # these are derived from the single source A
   # they only affect the model through the hyperparameters
@@ -18,9 +20,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   # hyperparameters for B
   r_B = retX[[4]]
   s_B = retX[[5]]
-  # take the transpose
-  # now each row is a time series
-  X = t(X)
+  
   # get the number of repetitions, which is the number of rows
   nRep = dim(X)[1]
   # number of times (bins) is the number of columns
@@ -36,12 +36,8 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   pi_gamma = rDirichlet(1,rep(alpha_gamma,K))
   
   # sample gammas
-  gamma = rep(NA,nRep)
-  
-  for(i in 1:nRep){
-    k = sample(1:K,size=1,prob=pi_gamma)
-    gamma[i] = k
-  }
+  gamma = sample(1:K, size = nRep, prob = pi_gamma, replace = TRUE)
+
   # sample initial lambdas
   lambda_A =  rgamma(t.T, shape = r_A, rate = s_A)
   lambda_B =  rgamma(t.T, shape = r_B, rate = s_B)
@@ -51,15 +47,9 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   # covariance matrices
   K.SE = K.SE.inv = list()
   for(l in 1:L){
-    K.SE[[l]] = matrix(nrow=t.T,ncol=t.T)
-    for(t in 1:t.T){
-      for(s in 1:t.T){
-        r = abs(t-s)
-        K.SE[[l]][t,s] = exp(-r^2/(2*ell[l]^2) ) # Squared exponential
-      }
-    }
-    # add on diagonal
-    K.SE[[l]] = K.SE[[l]] + .01*diag(t.T) 
+    t.mat = matrix(1:t.T, nrow = t.T, ncol = t.T)
+    s.mat = t(t.mat)
+    K.SE[[l]] = exp(-abs(t.mat - s.mat)^2/(2*ell[l]^2)) + 0.01*diag(t.T)
     # solve to get inverse
     K.SE.inv[[l]] = solve(K.SE[[l]])
   }
@@ -89,13 +79,12 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   SIGMA2_POST = Ell_Post = matrix(nrow = N.MC, ncol = L)
   
   lambda_A_POST = lambda_B_POST = matrix(nrow = N.MC, ncol = t.T)
-  for(i in 1:nRep){
-    ALPHA[[i]] = A_POST[[i]] = matrix( nrow = N.MC, ncol = t.T)
-  }
+
+  ALPHA = lapply(1:nRep, function(x) {matrix(nrow = N.MC, ncol = t.T)})
+  A_POST = ALPHA
   ALPHA_pred = matrix(nrow = N.MC, ncol = t.T) 
   ###############################
   #inside MCMC loop
-  
   alpha = 1/(1+exp(-eta))
   mm = 0
   
@@ -106,7 +95,6 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     B = X - A
     A_star = A_star_step(A,lambda_A,alpha)
     B_star = B_star_step(B,lambda_B,alpha)
-    
     #Block 2
     lambda_A = lambda_A_step(A,A_star,alpha, r_A, s_A)
     lambda_B = lambda_B_step(B,B_star,alpha, r_B, s_B)
@@ -117,7 +105,6 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     #Block 4 
     # no longer updated zeta, it is fixed at 1
     #zeta = Zeta_step_collapsed(A,A_star,B,B_star,Omega,gamma,m_gamma,sigma2_gamma,sigma2, phi, p)
-    
     ETA = eta_Matern(A,A_star,B,B_star,Omega, zeta, sigma2, K.SE, ell_prior, gamma, m_gamma, sigma2_gamma)
     eta_bar = ETA[[1]]
     eta = ETA[[2]]
@@ -193,6 +180,10 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   # compute median of MinMax
   Median.Min.Max = apply(MinMax,2,median)
   
+  data_to_summarize = list(ALPHA = ALPHA, MinMax.Pred = MinMax.Pred,
+                           ALPHA_pred = ALPHA_pred)
+  
+  store_df = make_summary_data(data_to_summarize)
   # save a data file with the results
   save(file = paste(Triplet_dir,"triplet_",triplet,".RData", sep=""),
        alpha_mean, 
@@ -204,7 +195,8 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
        ALPHA_BAR_POST,
        ETA_BAR_POST, 
        ALPHA_pred,
-       Median.Min.Max)
+       Median.Min.Max,
+       store_df)
   
   return_list = list(
     triplet = triplet,

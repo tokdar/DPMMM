@@ -57,8 +57,8 @@ rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n = n, shape = shape, r
 
 directory = "/Users/azeemzaman/Documents/Research/Neuro/DPMMM/"
 Code_dir = paste(directory,"Code/",sep="")
-Fig_dir = paste(directory,"Figures/",sep="")
-Triplet_dir = paste(directory,"Post_Summaries/",sep="")
+Fig_dir = paste(directory,"Figures_Pass/",sep="")
+Triplet_dir = paste(directory,"Post_Summaries_Pass/",sep="")
 
 
 source(paste(Code_dir,"A_step.R",sep="") )
@@ -112,7 +112,7 @@ Triplet_meta = read.csv("/Users/azeemzaman/Documents/Research/Neuro/DPMMM/Triple
 Triplet_meta = unique(Triplet_meta)
 # Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
 Triplet_meta = Triplet_meta[order(Triplet_meta[,"WinPr"], decreasing=T),]
-triplets = sample(1:nrow(Triplet_meta), 1)
+triplets = 1:16
 
 source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )
@@ -123,6 +123,14 @@ MCMC.results = mclapply(triplets, function(triplet) {try(MCMC.triplet(triplet, e
 proc.time()[3] - pt
 mclapply(MCMC.results, function(x) {try(MCMC.plot(x, F, 2, widthes))}, mc.cores = nCores)
 
-
+# collect error messages
+errors = which(sapply(MCMC.results, typeof) == "character")
+log.file = file("log.txt")
+sink(log.file, append = TRUE)
+for (error in errors){
+  print(Triplet_meta[error,1])
+  print(MCMC.results[[error]])
+}
+sink()
 
 

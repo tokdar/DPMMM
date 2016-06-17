@@ -1,5 +1,6 @@
 switch_counter <- function(my_seq, band_width){
   # calculate sequence mean
+  N = length(my_seq)
   seq_mean = mean(my_seq)
   band_up = seq_mean + band_width
   band_low = seq_mean - band_width
@@ -15,7 +16,7 @@ switch_counter <- function(my_seq, band_width){
   reached_high = FALSE
   #in_mid = FALSE
   reached_low = FALSE
-  for (i in 1:40){
+  for (i in 1:N){
     current_pos = point_pos[i]
     if (current_pos == 1){
       reached_high = TRUE
