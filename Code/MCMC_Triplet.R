@@ -105,7 +105,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     #Block 4 
     # no longer updated zeta, it is fixed at 1
     #zeta = Zeta_step_collapsed(A,A_star,B,B_star,Omega,gamma,m_gamma,sigma2_gamma,sigma2, phi, p)
-    ETA = eta_Matern(A,A_star,B,B_star,Omega, zeta, sigma2, K.SE, ell_prior, gamma, m_gamma, sigma2_gamma)
+    ETA = eta_Matern_mod(A,A_star,B,B_star,Omega, zeta, sigma2, K.SE, ell_prior, gamma, m_gamma, sigma2_gamma)
     eta_bar = ETA[[1]]
     eta = ETA[[2]]
     eta_dynamic = ETA[[3]]
