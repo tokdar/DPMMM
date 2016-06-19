@@ -69,6 +69,7 @@ source(paste(Code_dir,"lambda_B_step.R",sep="") )
 source(paste(Code_dir,"Omega_step.R",sep="") )
 source(paste(Code_dir,"K_Matern.R",sep="") )
 source(paste(Code_dir,"eta_Matern.R", sep="") )
+source(paste(Code_dir,"eta_Matern_mod.R", sep="") )
 source(paste(Code_dir,"ell_prior_step.R",sep="") )
 source(paste(Code_dir,"sigma2_Matern_step.R", sep="") )
 source(paste(Code_dir,"p_step.R",sep="") )
@@ -112,7 +113,7 @@ Triplet_meta = read.csv("/Users/azeemzaman/Documents/Research/Neuro/DPMMM/Triple
 Triplet_meta = unique(Triplet_meta)
 # Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
 Triplet_meta = Triplet_meta[order(Triplet_meta[,"WinPr"], decreasing=T),]
-triplets = 1:16
+triplets = 1:4
 
 source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )
@@ -128,7 +129,7 @@ errors = which(sapply(MCMC.results, typeof) == "character")
 log.file = file("log.txt")
 sink(log.file, append = TRUE)
 for (error in errors){
-  print(Triplet_meta[error,1])
+  print(Triplet_meta[error,1:11])
   print(MCMC.results[[error]])
 }
 sink()
