@@ -1,0 +1,201 @@
+
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1632 YKIC110411Loc_DoubleSound 1 1100 -6 Mixture Divide 1 1 0.5 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1247 YKIC110311Loc_DoubleSound 1 1100 24 Average Divide 0.58 1 0.44 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1636 YKIC090111_1Loc_DoubleSound 1 1100 -6 Average Divide 0.91 1 0.49 0.05
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1277 YKIC110411_1Loc_DoubleSound 1 500 -6 Average Divide 1 1 0.59 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1637 YKIC110311Loc_DoubleSound 1 1100 -6 Single Divide 0.6 1 0.29 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1624 YKIC110311Loc_DoubleSound 1 1100 -24 Average Divide 0.92 1 0.35 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1291 YKIC110111_1Loc_DoubleSound 1 500 -6 Average Divide 0.63 0.98 0.42 0.1
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+675 YKIC102811_1Loc_DoubleSound 1 1100 -6 Outside Divide 0.52 1 0.26 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1574 YKIC110111Loc_DoubleSound 1 500 -6 Single Divide 0.35 0.98 0.37 0.1
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1408 PSIC092810Loc_DoubleSound 1 1100 -24 Average Divide 0.97 0.92 0.52 0.16
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1618 YKIC090911_1Loc_DoubleSound 1 1100 -6 Average Divide 0.49 1 0.36 0.06
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1575 YKIC110111Loc_DoubleSound 1 1100 -6 Single Divide 0.35 0.98 0.36 0.12
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+735 YKIC110411Loc_DoubleSound 1 903 -6 Mixture Divide 1 0.99 0.39 0.1
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1643 YKIC092311_1Loc_DoubleSound 1 609 24 Average Divide 1 0.81 0.5 0.29
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+816 YKIC090211_1Loc_DoubleSound 1 500 6 Mixture Divide 0.99 1 0.45 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1608 YKIC102811_1Loc_DoubleSound 1 500 -6 Single Divide 0.47 0.99 0.38 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+345 YKIC110411_1Loc_DoubleSound 1 609 -6 Average Divide 1 1 0.53 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1622 YKIC110911Loc_DoubleSound 1 1100 -6 Average Divide 0.61 0.99 0.47 0.09
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1041 YKIC090211_1Loc_DoubleSound 1 609 6 Mixture Divide 1 1 0.48 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+283 PSIC111710Loc_DoubleSound 1 1100 -24 Mixture Divide 0.9 1 0.45 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+435 YKIC110111Loc_DoubleSound 1 903 24 Average Divide 0.9 1 0.51 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1493 YKIC102811_1Loc_DoubleSound 1 903 -6 Single Divide 0.51 1 0.37 0.08
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1548 YKIC110111_1Loc_DoubleSound 1 1100 -6 Single Divide 0.35 0.96 0.36 0.13
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1632 YKIC110411Loc_DoubleSound 1 1100 -6 Mixture Divide 1 1 0.5 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1099 YKIC140314Loc_DoubleSound 2 500 24 Mixture Divide 0.99 1 0.59 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1247 YKIC110311Loc_DoubleSound 1 1100 24 Average Divide 0.58 1 0.44 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1636 YKIC090111_1Loc_DoubleSound 1 1100 -6 Average Divide 0.91 1 0.49 0.05
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1536 YKIC140314Loc_DoubleSound 2 500 6 Average Divide 0.93 1 0.53 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1277 YKIC110411_1Loc_DoubleSound 1 500 -6 Average Divide 1 1 0.59 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1637 YKIC110311Loc_DoubleSound 1 1100 -6 Single Divide 0.6 1 0.29 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1624 YKIC110311Loc_DoubleSound 1 1100 -24 Average Divide 0.92 1 0.35 0.03
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1291 YKIC110111_1Loc_DoubleSound 1 500 -6 Average Divide 0.63 0.98 0.42 0.1
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1420 YKIC140221Loc_DoubleSound 2 500 6 Mixture Divide 1 0.97 0.51 0.12
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+675 YKIC102811_1Loc_DoubleSound 1 1100 -6 Outside Divide 0.52 1 0.26 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1304 YKIC140325Loc_DoubleSound 2 500 6 Mixture Divide 1 1 0.3 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1574 YKIC110111Loc_DoubleSound 1 500 -6 Single Divide 0.35 0.98 0.37 0.1
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1408 PSIC092810Loc_DoubleSound 1 1100 -24 Average Divide 0.97 0.92 0.52 0.16
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1085 YKIC140221Loc_DoubleSound 2 500 24 Mixture Divide 1 1 0.47 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1496 YKIC140131Loc_DoubleSound 1 609 24 Mixture Switch 1 0.89 0.37 0.65
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1618 YKIC090911_1Loc_DoubleSound 1 1100 -6 Average Divide 0.49 1 0.36 0.06
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+40 YKIC140529Loc_DoubleSound 2 500 24 Mixture Divide 1 1 0.36 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1109 YKIC140314Loc_DoubleSound 2 500 -6 Average Divide 0.99 1 0.69 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+735 YKIC110411Loc_DoubleSound 1 903 -6 Mixture Divide 1 0.99 0.39 0.1
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+816 YKIC090211_1Loc_DoubleSound 1 500 6 Mixture Divide 0.99 1 0.45 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1608 YKIC102811_1Loc_DoubleSound 1 500 -6 Single Divide 0.47 0.99 0.38 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+345 YKIC110411_1Loc_DoubleSound 1 609 -6 Average Divide 1 1 0.53 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1622 YKIC110911Loc_DoubleSound 1 1100 -6 Average Divide 0.61 0.99 0.47 0.09
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1041 YKIC090211_1Loc_DoubleSound 1 609 6 Mixture Divide 1 1 0.48 0.04
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+283 PSIC111710Loc_DoubleSound 1 1100 -24 Mixture Divide 0.9 1 0.45 0.07
+Error in open.connection(file, "rt") : cannot open the connection
+===============
+X Cell Site AltFreq AltPos PoiWin HmmWin PoiWinPr HmmWinPr HmmMidAlph SwiRate
+1493 YKIC102811_1Loc_DoubleSound 1 903 -6 Single Divide 0.51 1 0.37 0.08
+Error in open.connection(file, "rt") : cannot open the connection
+===============
