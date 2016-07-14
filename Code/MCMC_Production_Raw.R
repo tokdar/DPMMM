@@ -78,9 +78,13 @@ smoogam <- function(x){
 # directory on Saxon
 directory = "/home/grad/azz2/Research/DPMMM/"
 Code_dir = paste(directory,"Code/",sep="")
-Fig_dir = paste(directory,"Figures_Raw/",sep="")
-Triplet_dir = paste(directory,"Post_Summaries_Raw/",sep="")
-
+Fig_dir = paste(directory,"Figures_Raw2/",sep="")
+Triplet_dir = paste(directory,"Post_Summaries_Raw2/",sep="")
+for (direc in c(Code_dir, Fig_dir, Triplet_dir)){
+  if (!file.exists(direc)){
+    dir.create(direc)
+  }
+}
 
 source(paste(Code_dir,"A_step.R",sep="") )
 source(paste(Code_dir,"A_star_step.R",sep="") )
@@ -142,8 +146,8 @@ widthes = seq(from = 0.01, to = .15, length.out = 20)
 #triplets = 321:417
 
 # read in the names of tiles
-root.dir <- "Data/synth_sub"
-file.names <- as.character(read.table("Simulated_Data.txt")$V1)
+root.dir <- "Data/synth_sub2"
+file.names <- as.character(read.table("Synth_Data2.txt")$V1)
 full.names <- paste0(root.dir, "/", file.names)
 triplet.data <- list()
 for (i in 1:length(full.names)){
@@ -182,13 +186,13 @@ mclapply(MCMC.results, function(x) {try(MCMC.plot(x, F, 2, widthes))}, mc.cores 
 # collect error messages
 errors = which(sapply(MCMC.results, typeof) == "character")
 for (error in errors){
-  cat("\n", file = "raw_log.txt", append = TRUE)
-  cat(colnames(Triplet_meta)[1:11], file = "raw_log.txt", append = TRUE)
-  cat("\n", file = "raw_log.txt", append = TRUE)
-  cat(paste(sapply(Triplet_meta[error,1:11], as.character), sep = ","), file = "raw_log.txt", append = TRUE)
-  cat("\n", file = "raw_log.txt", append = TRUE)
-  cat(as.character(MCMC.results[[error]]), file = "raw_log.txt", append = TRUE)
-  cat("===============", file = "raw_log.txt", append = TRUE)
+  cat("\n", file = "raw_log2.txt", append = TRUE)
+  cat(colnames(Triplet_meta)[1:11], file = "raw_log2.txt", append = TRUE)
+  cat("\n", file = "raw_log2.txt", append = TRUE)
+  cat(paste(sapply(Triplet_meta[error,1:11], as.character), sep = ","), file = "raw_log2.txt", append = TRUE)
+  cat("\n", file = "raw_log2.txt", append = TRUE)
+  cat(as.character(MCMC.results[[error]]), file = "raw_log2.txt", append = TRUE)
+  cat("===============", file = "raw_log2.txt", append = TRUE)
   #print(MCMC.results[[error]])
 }
 
