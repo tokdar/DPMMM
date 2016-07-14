@@ -1,12 +1,8 @@
 Omega_step<-function(A_star,B_star,eta){
-  nRep = dim(eta)[1]
-  t.T = dim(eta)[2]
-  Omega = matrix(nrow = nRep, ncol = t.T)
-  for(i in 1:nRep){
-    for(t in 1:t.T){
-      N = A_star[i,t] + B_star[i,t]
-      Omega[i,t] = rpg.devroye(num=1,n = N, z = eta[i,t])
-    }
-  }
+  eta.dim <- dim(eta)
+  eta.len <- prod(eta.dim)
+  N <- A_star + B_star
+  Omega <- sapply(1:eta.len, function(j) rpg.devroye(num = 1, n = N[j], z = eta[j]))
+  dim(Omega) <- eta.dim
   return(Omega)
 }
