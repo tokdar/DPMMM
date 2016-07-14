@@ -26,11 +26,11 @@ eta_Matern_mod <-function(A,A_star,B,B_star,Omega, zeta, sigma2, K.Matern, ell_p
     kappa_i = matrix(kappa[i,], ncol = 1)
     p.L = rep(NA,L)
     L_omega_c_inv_sum = lapply(1:L, function(l) {chol(Omega_i + C.inv[[l]][[k]])})
-    L_omega_c_inv_det = lapply(1:L, function(l) {prod(diag(L_omega_c_inv_sum[[l]]))^2})
+    L_omega_c_inv_det = lapply(1:L, function(l) {sum(log(diag(L_omega_c_inv_sum[[l]])))})
     L_omega_c_inv_inv = lapply(1:L, function(l) {chol2inv(L_omega_c_inv_sum[[l]])})
     for(l in 1:L){
       p.L[[l]] = log(ell_prior[l])
-      p.L[l] = p.L[[l]] + -.5*log(prod(diag(C.chol[[l]][[k]]))^2 ) - .5*log(L_omega_c_inv_det[[l]] )
+      p.L[l] = p.L[[l]] + - sum(log(diag(C.chol[[l]][[k]])) ) - L_omega_c_inv_det[[l]]
       p.L[[l]] = p.L[[l]] -as.numeric( .5*m_gamma[k]*t(ones)%*%C.inv.ones[[l]][[k]] )
       arg = kappa_i + C.inv.ones[[l]][[k]]
       p.L[[l]] = p.L[[l]] + as.numeric( .5*t(arg)%*%L_omega_c_inv_inv[[l]]%*%arg )
