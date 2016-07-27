@@ -56,7 +56,11 @@ write(file.list,file=list.file.names)
 make_synth_mix <- function(control.types, n_trials_vec, repeats,
                        lambdaAseed, lambdaBseed, out.dir,
                        list.file.names, bw = 200,
-                       start.time = -200, end.time = 1000){
+                       start.time = -200, end.time = 1000,
+                       jit = 0,
+                       sin.period = 400,
+                       compressA = 1,
+                       compressB = 1){
   #script to make the various synthetic trials
   
   source("Code/synth_trial_maker.R")
@@ -81,9 +85,17 @@ make_synth_mix <- function(control.types, n_trials_vec, repeats,
         # don't know why it is necessary
         # rm(Aspikes,Bspikes,ABspikes,spike_data)
         L_ABspikes <- lapply(1:n_trials, function(x)
-                                    {make_synth_data(trial.nums=trial_nums[3,x], start.time = start.time, 
-                                    end.time = end.time, bw = bw,lambdaA=lambdaA,
-                                    lambdaB=lambdaB,control.type=control.types[x])})
+                                    {make_synth_data_mix(trial.nums=trial_nums[3,x], 
+                                                         start.time = start.time, 
+                                                        end.time = end.time, 
+                                                        bw = bw,lambdaA=lambdaA,
+                                                        lambdaB=lambdaB,
+                                                        jit = jit[x],
+                                                        sin.period = sin.period[x],
+                                                        compressA = compressA[x],
+                                                        compressB = compressB[x],
+                                                        control.type=control.types[x],
+                                                        )})
         ABspikes <- do.call(rbind, L_ABspikes)
         spike_data<-rbind(Aspikes,Bspikes,ABspikes)
         

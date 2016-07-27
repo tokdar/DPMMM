@@ -5,11 +5,59 @@ rm(list=ls())
 FIRST_USE = F
 if(FIRST_USE) install.packages(c("BayesLogit", "parallel", "ggplot2"), 
                                repos = "http://cran.us.r-project.org")
+exper.name <- "MixA400B100Sine50CompA75B25TestSigma2"
+expir.desc <- "Run experiments with fixed shift in smooth multiplexing"
+#############################
+# generate synthetic data
+#############################
+# Select control types from this list
+# control.type = c("Alike", "weak_switch80","weak_switch90", 
+#                  "switch", "average","wt_average","avg_mplxd",
+#                   "wt_avg_mplxd", "outside", "smoo_mplxd")
+control.type = c("average", "smoo_mplxd")
+mix_bool = T
+#control.types = rep(control.type, 10)
+control.types = sample(control.type, size = 20, prob = c(.5, .5), replace = TRUE)
+#number of trials to be simulated for each triplet
+n_trials_vec=c(20) 
+#number of files(triplets) to be generated for each condition
+repeats = 8   
+#Note: the spike generator is made to accept lambda in a vector form 
+# with lambda for each time bin,
+# baseline for A = 400, B = 100
+lambdaASeed=400  
+lambdaBSeed=100 
+
+#sin.period <- rep(400, n_trials_vec)
+sin.period <- seq(from = 200, to = 1200, length.out = 20)
+jit <- sample(1:sin.period, n_trials_vec)
+compressA <- rep(.75, n_trials_vec)
+compressB <- rep(.25, n_trials_vec)
+out.dir = paste0("Data/", exper.name, "/")
+list.file.names = paste0(out.dir, "Synth_names.txt")
+
+source("Code/Make_Synth_Data.R")
+if (mix_bool == FALSE){
+  control.types = control.type
+  make_synth(control.type, n_trials_vec, repeats, lambdaASeed,
+             lambdaBSeed, out.dir, list.file.names)
+} else {
+  
+  make_synth_mix(control.types, n_trials_vec, repeats, lambdaASeed,
+                 lambdaBSeed, out.dir, list.file.names,
+                 bw = 200,
+                 start.time = -200,
+                 end.time = 1000,
+                 jit,
+                 sin.period,
+                 compressA,
+                 compressB)
+}
 
 # set burn in
-burnIn = 25e3
+burnIn = 3000
 # set number of iterations
-N.MC = 25e3
+N.MC = 2000
 # set thinning rate
 # if set to 1, no thinning
 thin = 1
@@ -42,11 +90,16 @@ rDirichlet <- function(n, alpha){
   #######################################
   l <- length(alpha)
   x <- matrix(rgamma(l * n, alpha), ncol = l, byrow = TRUE)
-  sm <- x %*% rep(1, l)
-  return(x/as.vector(sm))
+  sm <- rowSums(x)
+  return(x/sm)
 }
 
 rinvgamma <-function(n,shape, scale = 1) return(1/rgamma(n = n, shape = shape, rate = scale))
+
+rtruncgamma <- function(n, low = 0, up = Inf, ...){
+  unifs <- runif(n)
+  return(qgamma(pgamma(low, ...) + unifs*(pgamma(up, ...) - pgamma(low, ...)), ...))
+}
 
 smoogam <- function(x){
   require(mgcv)
@@ -78,8 +131,8 @@ smoogam <- function(x){
 # directory on Saxon
 directory = "/home/grad/azz2/Research/DPMMM/"
 Code_dir = paste(directory,"Code/",sep="")
-Fig_dir = paste(directory,"Figures_Raw2/",sep="")
-Triplet_dir = paste(directory,"Post_Summaries_Raw2/",sep="")
+Fig_dir = paste(directory,"Figures/", exper.name, "/", sep="")
+Triplet_dir = paste(directory,"Post_Summaries/", exper.name, "/", sep="")
 for (direc in c(Code_dir, Fig_dir, Triplet_dir)){
   if (!file.exists(direc)){
     dir.create(direc)
@@ -116,14 +169,17 @@ sigma2_0 = 1 #.01
 r_gamma = 101
 s_gamma = 1
 
-ell = c(1,2,3,4,5,15)
+#ell = c(1,2,3,4,5,15)
+# using new length scales
+ell = c(3, 6, 8, 20, 80)
 L = length(ell)
-ell_0 = c( rep(.5/(L-1),(L-1) ), .5)
-
+#ell_0 = c( rep(.5/(L-1),(L-1) ), .5)
+ell_0 = rep(1/L, L)
 #sampling for sigma2
-delta = 2
-r_0 = 51
-s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2)) 
+delta = 2e4
+#r_0 = 51
+#s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2)) 
+r_0 = s_0 = .1
 
 #parameters for pi_gamma
 alpha_gamma = 1/K
@@ -146,8 +202,9 @@ widthes = seq(from = 0.01, to = .15, length.out = 20)
 #triplets = 321:417
 
 # read in the names of tiles
-root.dir <- "Data/synth_sub2"
-file.names <- as.character(read.table("Synth_Data2.txt")$V1)
+root.dir <- paste0("Data/", exper.name)
+list.file.loc <- paste0(directory, root.dir, list.file.names)
+file.names <- as.character(read.table(list.file.names)$V1)
 full.names <- paste0(root.dir, "/", file.names)
 triplet.data <- list()
 for (i in 1:length(full.names)){
@@ -172,28 +229,60 @@ N.MC = 50
 test_run = MCMC.triplet.raw(triplet.data[[1]][[1]], triplet.data[[1]][[2]], 
                             triplet.data[[1]][[3]], ell_0, ETA_BAR_PRIOR, 
                             MinMax.Prior)
-MCMC.plot(test_run, F, 2, widthes)
+MCMC.plot(test_run, F, 10, widthes)
 
 # reset burnin and N.MC
-burnIn = 25e3
-N.MC = 25e3
+burnIn = 3000
+N.MC = 2000
 #triplets is the index (or row number) of the triplet in the Triplet_Meta dataframe
 pt = proc.time()[3]
 MCMC.results = mclapply(triplet.data, function(triplet) {try(MCMC.triplet.raw(triplet[[1]], triplet[[2]], triplet[[3]], ell_0, ETA_BAR_PRIOR, MinMax.Prior))}, mc.cores = nCores)
 proc.time()[3] - pt
-mclapply(MCMC.results, function(x) {try(MCMC.plot(x, F, 2, widthes))}, mc.cores = nCores)
+mclapply(MCMC.results, function(x) {try(MCMC.plot(x, F, 100, widthes, T))}, mc.cores = nCores)
 
 # collect error messages
 errors = which(sapply(MCMC.results, typeof) == "character")
 for (error in errors){
-  cat("\n", file = "raw_log2.txt", append = TRUE)
-  cat(colnames(Triplet_meta)[1:11], file = "raw_log2.txt", append = TRUE)
-  cat("\n", file = "raw_log2.txt", append = TRUE)
-  cat(paste(sapply(Triplet_meta[error,1:11], as.character), sep = ","), file = "raw_log2.txt", append = TRUE)
-  cat("\n", file = "raw_log2.txt", append = TRUE)
-  cat(as.character(MCMC.results[[error]]), file = "raw_log2.txt", append = TRUE)
-  cat("===============", file = "raw_log2.txt", append = TRUE)
+  #cat("\n", file = "raw_log.txt", append = TRUE)
+  #cat(colnames(Triplet_meta)[1:11], file = "raw_log.txt", append = TRUE)
+  #cat("\n", file = "raw_log.txt", append = TRUE)
+  #cat(paste(sapply(Triplet_meta[error,1:11], as.character), sep = ","), file = "raw_log.txt", append = TRUE)
+  cat("\n", file = "raw_log.txt", append = TRUE)
+  cat(as.character(MCMC.results[[error]]), file = "raw_log.txt", append = TRUE)
+  cat("===============", file = "raw_log.txt", append = TRUE)
   #print(MCMC.results[[error]])
 }
 
-
+# clean up and conversion
+image.dir <- paste0("Images/", exper.name)
+if (!file.exists(image.dir)){
+  dir.create(image.dir)
+}
+root.dir <- paste0("Data/", exper.name)
+list.file.loc <- paste0(directory, root.dir, list.file.names)
+file.names <- as.character(read.table(list.file.names)$V1)
+file.names <- sapply(file.names, function(x) {strsplit(x, "/")[[1]][1]})
+names_ext <- paste0(file.names, ".png")
+curr_files <- paste0("Summary_Triplet",1:length(full.names), ".pdf-1.png")
+cbind(curr_files, names_ext)
+conv_csv <- paste0(image.dir, "/rename.csv")
+write.csv(cbind(curr_files, names_ext), file = conv_csv, row.names = F, col.names = F)
+clean_file <- paste0(image.dir, "/cleanup.sh")
+str1 = paste0("START=1
+END=",length(file.names))
+str2 = paste0('EXT=".pdf"
+for ((i=START;i<=END;i++));
+do
+file="../../Figures/', exper.name,'/Triplet_$i/Summary_Triplet$i"')
+str3 = 'file+=".pdf"	
+echo "Copying $file"
+cp $file ./
+  echo "Converting Summary_Triplet$i$EXT "
+file="Summary_Triplet$i$EXT"
+pdftoppm -rx 300 -ry 300 -png "$file" "$file"
+done'
+str4 = "awk -F, \'{print("
+str5 = '"mv \\"" $1 "\\" \\"" $2 "\\"")}'
+str6 = "' rename.csv | bash -"
+full_file = paste0(paste(str1, str2, str3, str4, sep = "\n"), str5, str6)
+cat(full_file, file = clean_file)

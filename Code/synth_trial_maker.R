@@ -87,6 +87,55 @@ make_synth_data <- function(trial.nums, start.time = -200, end.time = 800, bw = 
   
 }
 
+make_synth_data_mix <- function(trial.nums, start.time = -200, end.time = 800, 
+                                bw = 25,lambdaA=rep(0,(end.time-start.time)/bw),
+                                lambdaB=rep(0,(end.time-start.time)/bw),
+                                jit = 0,
+                                sin.period = 400,
+                                compressA = 1,
+                                compressB = 1,
+                                control.type=NULL, ...){
+  #spikemaker
+  
+  if(!is.null(control.type)){
+    if (control.type == "smoo_mplxd"){
+      ABspikes <- smooth_mplxd_single(trial.nums, 
+                                    lambdaA = lambdaA, 
+                                    lambdaB=lambdaB, 
+                                    time.bins = seq(from = start.time/1000,
+                                                    to = end.time/1000,
+                                                    by = 0.001),
+                                    jit = jit,
+                                    sin.period = sin.period,
+                                    compressA = compressA,
+                                    compressB = compressB)
+    } else {
+      for (ABindex in trial.nums) {
+        if (control.type == "Alike") added.spikes<-gen_synth_binwise(lambdaA=lambdaA, lambdaB=lambdaB, weight.factor = 1, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "Blike") added.spikes<-gen_synth_binwise(lambdaA=lambdaA, lambdaB=lambdaB, weight.factor = 0, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "outside") added.spikes<-gen_synth_binwise(lambdaA=lambdaA*1.25, lambdaB=lambdaB, weight.factor = 1, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "switch") added.spikes<-gen_synth_binwise(lambdaA=lambdaA, lambdaB=lambdaB, weight.factor = .5, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "average") added.spikes<-gen_synth_binwise(lambdaA=(lambdaA+lambdaB)/2, mplx.rate=0, num.ctrials=1,start.time=start.time, end.time=end.time, bw=bw)
+        else if (control.type == "wt_average") added.spikes<-gen_synth_binwise(lambdaA=(.75*lambdaA+.25*lambdaB),mplx.rate=0, num.ctrials=1,start.time=start.time, end.time=end.time, bw=bw)
+        else if (control.type == "avg_mplxd") added.spikes<-gen_synth_binwise(lambdaA=lambdaA, lambdaB=lambdaB,mplx.rate = .5, num.ctrials=1,start.time=start.time, end.time=end.time, bw = bw)
+        else if (control.type == "wt_avg_mplxd") added.spikes<-gen_synth_binwise(lambdaA=lambdaA, lambdaB=lambdaB,mplx.rate = .75, num.ctrials=1,start.time=start.time, end.time=end.time, bw = bw)
+        else if (control.type == "weak_switch85") added.spikes<-gen_synth_binwise(lambdaA=lambdaA*.85, lambdaB=lambdaB*1.15, weight.factor = .5, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "weak_switch90") added.spikes<-gen_synth_binwise(lambdaA=lambdaA*.90, lambdaB=lambdaB*1.1, weight.factor = .5, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "weak_switch95") added.spikes<-gen_synth_binwise(lambdaA=lambdaA*.95, lambdaB=lambdaB*1.05, weight.factor = .5, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        else if (control.type == "weak_switch80") added.spikes<-gen_synth_binwise(lambdaA=lambdaA*.80, lambdaB=lambdaB*1.20, weight.factor = .5, mplx.rate = 0, num.ctrials=1, start.time=start.time, end.time=end.time,bw=bw)
+        #else if (control.type == "smoo_mplxd") added.spikes <- smooth_mplxd_wrap(ntrials = 1, lambdaA = lambdaA, lambdaB=lambdaB, time.bins = seq(from = start.time/1000,
+        #  to = end.time/1000,
+        #  by = 0.001))
+        else added.spikes <- 0
+        added.spikes[,1]<-ABindex
+        if (exists('ABspikes')) ABspikes<-rbind(ABspikes,added.spikes)
+        else ABspikes<-added.spikes
+      }
+    }
+  }
+  ABspikes
+  
+}
 rPoiProc <- function(lambda, time.bins = seq(0, 1, .001)){
   ## time measured in seconds. lambda is a vector of values of 
   ## a rate function (in Hz) recorded at the mid-points of time.bins
@@ -114,5 +163,20 @@ smooth_mplxd_wrap <- function(ntrials, lambdaA, lambdaB, time.bins = seq(0, 1, 0
       all_trials <- rbind(all_trials, temp_mat)
     }
   }
+  return(all_trials)
+}
+
+
+smooth_mplxd_single <- function(trial_num, lambdaA, lambdaB, time.bins = seq(0, 1, 0.001),
+                              jit = 0, sin.period = 400, compressA = 1, compressB = 0){
+  jit <- 0.001*jit
+  mid.points <- (time.bins[-1] + time.bins[-length(time.bins)])/2
+  sine_curve <- (sin((mid.points+jit)/sin.period*2*pi*1000)+1)/2
+  scale_fac <- compressA-compressB
+  conv_comb <- (sine_curve*scale_fac)+compressB
+  lambda <- lambdaA*conv_comb + lambdaB*(1-conv_comb)
+  spiketimes1 <- rPoiProc(lambda, time.bins)
+  
+  all_trials <- cbind(trial_num, 1000*spiketimes1)
   return(all_trials)
 }

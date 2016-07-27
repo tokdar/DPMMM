@@ -121,7 +121,7 @@ Triplet_meta = read.csv("/home/grad/azz2/Research/DPMMM/Filtered_All_HMM.csv")
 Triplet_meta = unique(Triplet_meta)
 Triplet_meta = Triplet_meta[order(Triplet_meta[,"SepBF"], decreasing=T),]
 # Triplet_meta = Triplet_meta[order(Triplet_meta[,"WinPr"], decreasing=T),]
-triplets = 321:417
+triplets = 33:64
 
 source(paste(Code_dir,"eta_bar_mixture.R",sep="") )
 source(paste(Code_dir,"MinMax_Prior.R",sep="") )

@@ -49,6 +49,9 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   for(l in 1:L){
     t.mat = matrix(1:t.T, nrow = t.T, ncol = t.T)
     s.mat = t(t.mat)
+    # this is the change recommended by Surya
+    # not sure
+    #K.SE[[l]] = exp(-abs(t.mat - s.mat)^2/(2*ell[l]^2)) + 1e-12*diag(t.T)
     K.SE[[l]] = exp(-abs(t.mat - s.mat)^2/(2*ell[l]^2)) + 0.01*diag(t.T)
     # solve to get inverse
     K.SE.inv[[l]] = solve(K.SE[[l]])
@@ -185,18 +188,7 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   
   store_df = make_summary_data(data_to_summarize)
   # save a data file with the results
-  save(file = paste(Triplet_dir,"triplet_",triplet,".RData", sep=""),
-       alpha_mean, 
-       alpha_pt025,
-       alpha_pt975,
-       A_mean, 
-       A_pt025, 
-       A_pt975,
-       ALPHA_BAR_POST,
-       ETA_BAR_POST, 
-       ALPHA_pred,
-       Median.Min.Max,
-       store_df)
+
   
   return_list = list(
     triplet = triplet,
@@ -213,6 +205,19 @@ MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
     ALPHA_pred = ALPHA_pred,
     MinMax = MinMax)
   
+    save(file = paste(Triplet_dir,"triplet_",triplet,".RData", sep=""),
+       alpha_mean, 
+       alpha_pt025,
+       alpha_pt975,
+       A_mean, 
+       A_pt025, 
+       A_pt975,
+       ALPHA_BAR_POST,
+       ETA_BAR_POST, 
+       ALPHA_pred,
+       Median.Min.Max,
+       store_df,
+       return_list)  
   return(return_list)
 }
 

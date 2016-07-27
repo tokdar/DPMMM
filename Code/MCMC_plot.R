@@ -1,4 +1,4 @@
-single_draw_plot <- function(n_samps, ALPHA, trails_to_sample){
+single_draw_plot <- function(n_samps, ALPHA, trails_to_sample, add_true_sin = F){
   bins = ncol(ALPHA[[1]])
   nRep = length(ALPHA)
   sampled_series = data.frame(Trail = 0, Sample = 0, matrix(NA, nrow = 1, ncol = bins))
@@ -13,22 +13,45 @@ single_draw_plot <- function(n_samps, ALPHA, trails_to_sample){
     trail_name = paste0("Trail_",i)
     sample_alpha_is = ALPHA[[i]][rows,]
     named_samples = data.frame(Trail = trail_name, 
-                               Sample = paste0(trail_name, 1:n_samps),
+                               Sample = paste0(trail_name, 1:n_samps, trail_name),
                                sample_alpha_is)
     sampled_series = rbind(sampled_series, named_samples)
   }
   sampled_series = sampled_series[-1,]
   colnames(sampled_series) <- c("Trail","Sample", 1:bins)
   plot_df = melt(sampled_series, variable.name = "Time")
-  plot_df$Time = 25*as.numeric(plot_df$Time)
+  plot_df$Time = 25*as.numeric(plot_df$Time) - 12.5
+  if (add_true_sin){
+    for (i in sampled_trails){
+      this_jit = jit[i]
+      this_period = sin.period[i]
+      time_span = range(plot_df$Time)
+      scaled_fac = compressA[i] - compressB[i]
+      shift_fac = compressB[i]
+      Time = time_span[1]:time_span[2]
+      this_type = control.types[i]
+      if (this_type == "smoo_mplxd"){
+        value = (sin((Time + this_jit)/this_period*2*pi) + 1)/2*scaled_fac + shift_fac
+      } else {
+        value = rep(1/2, length(Time))
+      }
+      sample_int = as.integer(-i)
+      sin_df = data.frame(Time = Time, value = value, 
+                          Sample = sample_int, Trail = paste0("Trail_",i))
+      plot_df = rbind(sin_df, plot_df)
+    }
+
+  }
   g = ggplot(plot_df, aes(x = Time, 
                           y = value,
                           group = Sample,
                           colour = Trail)) +
-      geom_line() +
+      geom_line(data = plot_df[plot_df$Sample > 0,], alpha = .1) +
+      geom_line(data = plot_df[plot_df$Sample <= 0,], size = 1.5, alpha = .5) +
       xlab("Time (ms)") +
       ylab("Alpha") +
-      theme(legend.position = "none")                  
+      theme(legend.position = "none")
+
   return(g)
 }
 
@@ -78,7 +101,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 
-MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes){
+MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes, add_true_sin = F){
   triplet = MCMC.results$triplet
   ALPHA_BAR_POST = MCMC.results$ALPHA_BAR_POST
   ALPHA = MCMC.results$ALPHA
@@ -253,7 +276,7 @@ MCMC.plot = function(MCMC.results, all.plots = F, n_samps, widthes){
 # make single page of plots
   
   # plot of alpha draws
-  p1 = single_draw_plot(n_samps, ALPHA, 3)
+  p1 = single_draw_plot(n_samps, ALPHA, 2, add_true_sin)
   
   # plot of distributions for length scales
   colnames(Ell_Post) = as.character(ell)

@@ -4,5 +4,6 @@ Omega_step<-function(A_star,B_star,eta){
   N <- A_star + B_star
   Omega <- sapply(1:eta.len, function(j) rpg.devroye(num = 1, n = N[j], z = eta[j]))
   dim(Omega) <- eta.dim
+  Omega[Omega == 0] <- 1e-12
   return(Omega)
 }

@@ -1,4 +1,4 @@
-MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
+MCMC.triplet<-function(triplet, ell_0, ETA_BAR_PRIOR, MinMax.Prior){
   
   Triplet_fig_dir = paste(Fig_dir,"Triplet_",triplet,"/",sep="")
   unlink(Triplet_fig_dir, recursive=T)
@@ -6,46 +6,20 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
   # this function translates the raw time data into counts
   # for bins of width 25ms
   # written by Surja, I believe
-  # modifing so that we can run with raw local data
-  # no need to fetch
-  # retX = Pre_Proc(triplet, bin_width = 25, Triplet_meta)
-  bin_width = 25
-  AB = Bincounts(trials, spiketimes, frq = c(1,2), 
-                 pos = c(24, -6), on.reward = TRUE, start.time = 0,
-                 end.time = 1000, bw = bin_width, target = c(25, 150, 800), 
-                 match.level = FALSE, AB.eqlevel = FALSE, go.by.soff = TRUE, 
-                 n.iter = 1e3, plot = FALSE, faux.dual.mix = FALSE, 
-                 faux.dual.int = FALSE, faux.alpha = 0.5, faux.dual.swi = FALSE,
-                 faux.target = c(100, 100), nAB = "match.realABcount")
-  X = AB[[3]]
-  
-  
-  x1 = AB[[1]]
-  x2 = AB[[2]]
-  x3 = AB[[3]]
-  
-  t.T <- nrow(X)
-  n1 <- ncol(x1)
-  n2 <- ncol(x2)
-  n3 <- ncol(x3)
-  
-  get.hyper1 <- smoogam(x1);
-  get.hyper2 <- smoogam(x2);
-  m.1 <- get.hyper1$mean; am.1 <- n1 * m.1; bm.1 <- rep(n1, t.T); s.1 <- sqrt(am.1)/bm.1
-  m.2 <- get.hyper2$mean; am.2 <- n2 * m.2; bm.2 <- rep(n2, t.T); s.2 <- sqrt(am.2)/bm.2
-  
-  r_A = am.1; s_A = bm.1
-  r_B = am.2; s_B = bm.2
-  
+  retX = Pre_Proc(triplet, bin_width = 25, Triplet_meta)
   # this function returns a list
   # first is counts for each bin
   # take the transpose
   # now each row is a time series
-  X = t(X)
+  X = t(retX[[1]])
   # then the prior parameters for A
   # these are derived from the single source A
   # they only affect the model through the hyperparameters
-  
+  r_A = retX[[2]]
+  s_A = retX[[3]]
+  # hyperparameters for B
+  r_B = retX[[4]]
+  s_B = retX[[5]]
   
   # get the number of repetitions, which is the number of rows
   nRep = dim(X)[1]
@@ -54,11 +28,12 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
   
   # L is the number of lengths we are considering (usually 5)
   L = length(ell_0)
-  
+  ell_index = rep(1,nRep)
+  ell_prior = rep(1/L,L)
   # sampling initial values?
   m_gamma = rnorm(K,m_0, sqrt(sigma2_0))
   sigma2_gamma = rinvgamma(K,r_gamma,s_gamma)
-  sigma2 = rinvgamma(L,r_0,s_0)
+  sigma2 = rinvgamma(nRep,r_0,s_0)
   pi_gamma = rDirichlet(1,rep(alpha_gamma,K))
   
   # sample gammas
@@ -75,17 +50,16 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
   for(l in 1:L){
     t.mat = matrix(1:t.T, nrow = t.T, ncol = t.T)
     s.mat = t(t.mat)
-    K.SE[[l]] = exp(-abs(t.mat - s.mat)^2/(2*ell[l]^2)) + 1e-12*diag(t.T)
+    K.SE[[l]] = exp(-abs(t.mat - s.mat)^2/(2*ell[l]^2)) + 0.01*diag(t.T)
     # solve to get inverse
     K.SE.inv[[l]] = solve(K.SE[[l]])
   }
   
-  ell_index = rep(1,nRep)
-  ell_prior = rep(1/L,L)
+
   # get eta matrix
   eta = matrix(nrow = nRep, ncol = t.T)
   for(i in 1:nRep){
-    C = sigma2[ ell_index[i] ]*K.SE[[ ell_index[i] ]]
+    C = sigma2[i]*K.SE[[ ell_index[i] ]]
     eta[i,] = mvrnorm(1, rep(0,t.T), C)
   }
   eta_dynamic = eta
@@ -243,3 +217,4 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
        return_list)  
   return(return_list)
 }
+
