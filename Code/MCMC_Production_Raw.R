@@ -179,7 +179,8 @@ ell_0 = rep(1/L, L)
 delta = 2e4
 #r_0 = 51
 #s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2)) 
-r_0 = s_0 = .1
+r_0 = 0.1
+s_0 = rep(r_0, L)
 
 #parameters for pi_gamma
 alpha_gamma = 1/K
