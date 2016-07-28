@@ -30,7 +30,7 @@ lambdaBSeed=100
 
 #sin.period <- rep(400, n_trials_vec)
 sin.period <- seq(from = 200, to = 1200, length.out = 20)
-jit <- sample(1:sin.period, n_trials_vec)
+jit <- sample(sin.period, n_trials_vec)
 compressA <- rep(.75, n_trials_vec)
 compressB <- rep(.25, n_trials_vec)
 out.dir = paste0("Data/", exper.name, "/")
