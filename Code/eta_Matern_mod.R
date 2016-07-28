@@ -13,7 +13,7 @@ eta_Matern_mod <-function(A,A_star,B,B_star,Omega, zeta, sigma2, K.Matern, ell_p
   for(l in 1:L){
     C[[l]] = C.inv[[l]] = C.chol[[l]] = C.inv.ones[[l]] = list()
     for(k in 1:K){
-      C[[l]][[k]] = temp_matrices[[l]] + sigma2_gamma[k]  
+      C[[l]][[k]] = temp_matrices[[l]] + sigma2_gamma[k]
       C.chol[[l]][[k]] = chol(C[[l]][[k]])
       C.inv[[l]][[k]] = chol2inv(C.chol[[l]][[k]])
       C.inv.ones[[l]][[k]] = m_gamma[k]*C.inv[[l]][[k]]%*%ones
