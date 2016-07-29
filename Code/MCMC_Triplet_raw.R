@@ -58,7 +58,7 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
   # sampling initial values?
   m_gamma = rnorm(K,m_0, sqrt(sigma2_0))
   sigma2_gamma = rinvgamma(K,r_gamma,s_gamma)
-  sigma2 = rinvgamma(L,r_0,s_0)
+  sigma2 = 1/rtruncgamma(L,shape = r_0, rate = s_0, low = 1/9, up = 1e4)
   pi_gamma = rDirichlet(1,rep(alpha_gamma,K))
   
   # sample gammas
@@ -71,13 +71,13 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
   
   
   # covariance matrices
-  K.SE = K.SE.inv = list()
+  K.SE = K.SE.inv = K.SE.chol = list()
+  t.dist.sq <- as.matrix(dist(1:t.T))^2
   for(l in 1:L){
-    t.mat = matrix(1:t.T, nrow = t.T, ncol = t.T)
-    s.mat = t(t.mat)
-    K.SE[[l]] = exp(-abs(t.mat - s.mat)^2/(2*ell[l]^2)) + 1e-12*diag(t.T)
+    K.SE[[l]] = exp(-t.dist.sq/(2*ell[l]^2)) + 1e-12*diag(t.T)
     # solve to get inverse
-    K.SE.inv[[l]] = solve(K.SE[[l]])
+    K.SE.chol[[l]] = chol(K.SE[[l]])
+    K.SE.inv[[l]] = chol2inv(K.SE.chol[[l]])
   }
   
   ell_index = rep(1,nRep)
@@ -85,8 +85,8 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
   # get eta matrix
   eta = matrix(nrow = nRep, ncol = t.T)
   for(i in 1:nRep){
-    C = sigma2[ ell_index[i] ]*K.SE[[ ell_index[i] ]]
-    eta[i,] = mvrnorm(1, rep(0,t.T), C)
+      ## draw from MVN(0, sigma2[ell_index[i]] * K.SE[[ell_index[i]]])
+      eta[i,] = sqrt(sigma2[ell_index[i]])*c(crossprod(K.SE.chol[[ell_index[i]]], rnorm(t.T)))
   }
   eta_dynamic = eta
   # take the average
@@ -141,7 +141,7 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
     
     ell_prior = ell_prior_step(ell_index,ell_0,L)
     #Block 6
-    sigma2 = sigma2_Matern_step(r_0, s_0, zeta, K.SE.inv, ell_index, eta, eta_bar)
+    sigma2 = sigma2_Matern_step(r_0, s_0, zeta, K.SE.chol, ell_index, eta, eta_bar)
     
     #Block 7
     gamma = gamma_step(eta_bar,m_gamma,sigma2_gamma,pi_gamma)
@@ -169,7 +169,7 @@ MCMC.triplet.raw<-function(triplet, trials, spiketimes, ell_0, ETA_BAR_PRIOR, Mi
       # this is used to calculate MinMax
       Ell_Post[mm,] = ell_prior[1,]
       l.pred = sample(1:L,1,prob=ell_prior[1,])
-      eta.pred = ETA_BAR_POST[mm] + mvrnorm(1,rep(0,t.T),sigma2[l.pred]*K.SE[[l.pred]])
+      eta.pred = ETA_BAR_POST[mm] + sqrt(sigma2[l.pred])*c(crossprod(K.SE.chol[[l.pred]], rnorm(t.T)))
       alpha.pred = 1/(1+exp(-eta.pred))
       ALPHA_pred[mm,] = alpha.pred
       MinMax.Pred[mm] = max(alpha.pred) - min(alpha.pred)
