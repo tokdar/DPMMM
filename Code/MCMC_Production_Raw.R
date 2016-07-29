@@ -17,9 +17,10 @@ expir.desc <- "Run experiments with fixed shift in smooth multiplexing"
 control.type = c("average", "smoo_mplxd")
 mix_bool = T
 #control.types = rep(control.type, 10)
-control.types = sample(control.type, size = 20, prob = c(.5, .5), replace = TRUE)
+nRep <- 50
+control.types = sample(control.type, size = nRep, prob = c(.5, .5), replace = TRUE)
 #number of trials to be simulated for each triplet
-n_trials_vec=c(20) 
+n_trials_vec=c(nRep) 
 #number of files(triplets) to be generated for each condition
 repeats = 8   
 #Note: the spike generator is made to accept lambda in a vector form 
@@ -29,7 +30,7 @@ lambdaASeed=400
 lambdaBSeed=100 
 
 #sin.period <- rep(400, n_trials_vec)
-sin.period <- seq(from = 200, to = 1200, length.out = 20)
+sin.period <- seq(from = 400, to = 1000, length.out = nRep)
 jit <- sample(sin.period, n_trials_vec)
 compressA <- rep(.75, n_trials_vec)
 compressB <- rep(.25, n_trials_vec)
@@ -179,7 +180,7 @@ ell_0 = rep(1/L, L)
 delta = 2e4
 #r_0 = 51
 #s_0 = (r_0 - 1)*(1-exp(-delta^2/ell^2)) 
-r_0 = s_0 = .1
+r_0 = 0.01; s_0 = r_0
 
 #parameters for pi_gamma
 alpha_gamma = 1/K
