@@ -13,7 +13,7 @@ for(i in 1:nSamples){
   m_gamma = rnorm(K,0,1)
   sigma2_gamma = rinvgamma(K,shape = r_gamma,scale = s_gamma)
   k = sample(1:K,size=1,prob=pi_gamma)
-  sigma2 = 1/rtruncgamma(1,shape = r_0, scale = s_0, low = 1/9, up = 1e4)
+  sigma2 = 1/rtruncgamma(1,shape = r_0, rate = s_0, low = 1/9, up = 1e4)
   
   eta_bar = rnorm(1,m_gamma[k], sqrt(sigma2_gamma[k]))
   
